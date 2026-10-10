@@ -10,6 +10,7 @@
 -- WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 -- ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--Credits for the UI go to ypkayla (GHP) alone!
 local function createStandaloneDependencies()
 	local function getGlobal(name)
 		local value
@@ -14779,7 +14780,13 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				instance.BorderSizePixel = 0
 				instance.BackgroundTransparency = constants[63]
 				instance.Position = UDim2.new(0, 5, constants[101], 0)
-				instance.AutomaticSize = Enum.AutomaticSize.XY
+				local inputWidth = arg.InputWidth
+				if type(inputWidth) == "number" and inputWidth > 0 then
+					instance.AutomaticSize = Enum.AutomaticSize.None
+					instance.Size = UDim2.fromOffset(math.min(inputWidth, arg.MaxWidth), controlHeight)
+				else
+					instance.AutomaticSize = Enum.AutomaticSize.XY
+				end
 				instance.TextSize = constants[13]
 				instance.Selectable = constants[34]
 				instance.Active = constants[34]
@@ -14862,6 +14869,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					Placeholder = arg4.Placeholder or constants[22],
 					FocusLostOnly = arg4.FocusLostOnly == constants[34],
 					MaxWidth = arg4.MaxLength or 200,
+					InputWidth = arg4.InputWidth,
 					Changed = arg3:Add(v115.new()),
 					ValueChanged = arg3:Add(v115.new()),
 					_onChanged = arg4.OnChanged or function() end,
@@ -21231,7 +21239,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 			local class = {}
 			class.__index = class
 
-			class.new = function(arg, parent, arg2, arg3, image)
+			class.new = function(arg, parent, arg2, arg3, image, imageSize)
 				local rail = v116.get().Rail
 				local frame = Instance.new("Frame")
 				frame.BackgroundTransparency = constants[63]
@@ -21264,8 +21272,13 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				local isLucideIcon = setImageSource(imageLabel, image)
 				imageLabel.BackgroundTransparency = 1
 				imageLabel.Position = UDim2.fromScale(constants[101], constants[101])
-				imageLabel.Size = UDim2.fromOffset(rail.LogoSize.X, rail.LogoSize.Y)
+				local logoSize = rail.LogoSize
+				if typeof(imageSize) == "Vector2" and imageSize.X > 0 and imageSize.Y > 0 then
+					logoSize = imageSize
+				end
+				imageLabel.Size = UDim2.fromOffset(logoSize.X, logoSize.Y)
 				imageLabel.BorderSizePixel = constants[186]
+				imageLabel.ScaleType = Enum.ScaleType.Fit
 				if image ~= nil and image == runtime.LithiumLogo then
 					imageLabel.ImageColor3 = Color3.new(1, 1, 1)
 					imageLabel.ScaleType = Enum.ScaleType.Fit
@@ -21969,13 +21982,18 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				return textLabel
 			end
 
-			local function fn37(parent, layoutOrder, image, arg)
+			local function fn37(parent, layoutOrder, image, arg, imageSize)
 				local instance = Instance.new(constants[146])
 				instance.LayoutOrder = layoutOrder
 				local isLucideIcon = setImageSource(instance, image)
 				instance.BackgroundTransparency = 1
-				instance.Size = UDim2.fromOffset(20, 20)
+				local size = typeof(imageSize) == "Vector2" and imageSize or Vector2.new(20, 20)
+				if size.X <= 0 or size.Y <= 0 then
+					size = Vector2.new(20, 20)
+				end
+				instance.Size = UDim2.fromOffset(size.X, size.Y)
 				instance.BorderSizePixel = 0
+				instance.ScaleType = Enum.ScaleType.Fit
 				if image ~= nil and image == runtime.LithiumLogo then
 					instance.ImageColor3 = Color3.new(1, 1, 1)
 					instance.ScaleType = Enum.ScaleType.Fit
@@ -22030,7 +22048,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					uiScale.Parent = frame
 				end
 
-				fn37(frame, 1, arg3.Icon, v119)
+				fn37(frame, 1, arg3.WatermarkIcon or arg3.Icon, v119, arg3.WatermarkIconSize)
 				local v120 = createTextLabel(frame, constants[56], arg3.Title, main, v119)
 				fn36(frame, 3, main, v119)
 				fn37(frame, 4, "lucide:activity", v119)
@@ -22473,7 +22491,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				v125:Bind(uiStroke, "Color", "Outline")
 				uiStroke.Parent = instance4
 				v115.addGlow(v125, instance4, { Amount = 2, DampingFactor = 0.78 })
-				local v133 = v119.new(arg, frame, v124, v125, arg3.Icon)
+				local v133 = v119.new(arg, frame, v124, v125, arg3.Icon, arg3.IconSize)
 				local width = v116.get().Rail.Width
 				local frame3 = Instance.new("Frame")
 				frame3.BackgroundTransparency = 1
@@ -25168,6 +25186,9 @@ end
 					_trove = v136,
 					Title = arg.Title or "GHP.wtf",
 					Icon = arg.Icon or defaultLogo,
+					IconSize = arg.IconSize,
+					WatermarkIcon = arg.WatermarkIcon or arg.Icon or defaultLogo,
+					WatermarkIconSize = arg.WatermarkIconSize,
 					Directory = directory,
 					ConfigVersion = arg.ConfigVersion or constants[63],
 					Fonts = { Main = Default },
@@ -25222,7 +25243,14 @@ end
 				end
 
 				setThreadIdentity(v143)
-				local tbl18 = { Title = obj.Title, Icon = obj.Icon, Username = obj._watermarkUsername }
+				local tbl18 = {
+					Title = obj.Title,
+					Icon = obj.Icon,
+					IconSize = obj.IconSize,
+					WatermarkIcon = obj.WatermarkIcon,
+					WatermarkIconSize = obj.WatermarkIconSize,
+					Username = obj._watermarkUsername,
+				}
 
 				obj._chrome = {
 					Window = v134.new(obj:View(), v138, v136, tbl18),
