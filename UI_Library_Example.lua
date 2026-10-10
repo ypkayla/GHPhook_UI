@@ -1,9 +1,17 @@
--- Load and initialize the standalone library from GitHub.
 local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
 local compile = assert(loadstring, "This example requires an environment with loadstring")
 local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
-local uiFactory = chunk()
-local ui = uiFactory()
+local uiResult = chunk()
+local ui
+if type(uiResult) == "function" then
+	ui = uiResult()
+elseif type(uiResult) == "table" then
+	ui = uiResult
+else
+	error("UI_Library.lua must return its initializer or initialized API; got " .. type(uiResult), 0)
+end
+assert(type(ui.DefaultLogo) == "string" and ui.DefaultLogo ~= "",
+	"The published UI_Library.lua is outdated. Publish the updated library with Lucide icons and the embedded GHP logo.")
 local environment = (getgenv and getgenv()) or _G
 
 local previous = environment.GhpUiLibraryExample
