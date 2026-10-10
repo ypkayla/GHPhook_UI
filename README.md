@@ -24,7 +24,7 @@ local ui = uiFactory()
 
 local menu = ui.CreateMenu({
     Title = "My menu",
-    Icon = "rbxassetid://123456789",
+    Icon = ui.DefaultLogo,
     Directory = "GHP_scripts/my-menu",
 })
 ```
@@ -38,7 +38,7 @@ Important menu options:
 | Option | Meaning |
 | --- | --- |
 | `Title` | Initial window and watermark title. |
-| `Icon` | Image asset identifier used by the window and watermark. |
+| `Icon` | `ui.DefaultLogo`, a `lucide:<name>` icon, or a custom image asset URI. |
 | `Directory` | Required path used for menu state and config-related files. |
 | `Config` | Optional reactive config adapter. Control `Config` paths only bind when this is supplied. |
 | `State`, `StateData` | Optional state manager and loaded state data. |
@@ -63,7 +63,7 @@ not both. A grid contains sections; a section contains controls.
 local tab = menu:AddTab({
     Label = "General",
     Description = "General options",
-    Icon = "rbxassetid://123456789",
+    Icon = "lucide:house",
 })
 
 local grid = tab:Grid({ Columns = 2 })
@@ -106,7 +106,7 @@ Change callbacks are `OnChanged(value)` and buttons use `OnClick()`.
 | `AddKeybind(options)` | Key capture and mode control. `Modes` supplies available modes; `ConfigMap` maps key/mode/active/list fields to config paths. `InKeybindList`, `ListLabel`, `ShowInList`, and `Invisible` control HUD listing; `OnChanged(value)` receives key/mode changes. |
 | `AddColor(options)` | Color picker. `Default = { Rgb = Color3, Alpha = number, Stops = stops }`; `Alpha = true` enables alpha, `Gradient = "editable"` enables Solid/Gradient selection, and `Gradient = "only"` forces gradient mode. Omit/disable gradients with `"off"`. `Animatable = true` enables color animations; `OnChanged(value)` receives `{ Rgb, Alpha, Stops }`. |
 | `AddSkinChanger(options)` | Skin/item browser. Each `Items` entry needs a `Name`; optional fields include `Title`, `Image`, `ImageSize`, `PreviewColor`, `SelectedPreviewColor`, `TitleColor`, `AccentColor`, `LayoutOrder`, `Selected`, and `Render(item, context)`. Also supports `Height`, `HeightMode`, `State`, `StateMessage`, `OnChanged`, `:SetItems`, `:SetState`, `:SetFilter`, and `:SetClearFilterAction`. |
-| `AddIconStrip(options)` | Choice strip with `Options = { { Name = "...", Icon = "rbxassetid://..." }, ... }`, `Default`, `Height`, and `OnChanged`. |
+| `AddIconStrip(options)` | Choice strip with `Options = { { Name = "...", Icon = "lucide:house" }, ... }`, `Default`, `Height`, and `OnChanged`. |
 | `AddViewport(options)` | 3D preview with `Height`, `FieldOfView`, `AutoRotate`, `RotateSpeed`, and `DistanceMul`. `:SetModel(model)` clones a `Model` or `BasePart`; also supports `:SetDistance` and `:SetRotation`. |
 | `AddOrderedList(options)` | Reorderable string list with `Items`, optional `Default` order, and `OnChanged(order)`. |
 | `AddGear(options)` | Adds a gear/details popup associated with an existing row. Pass the row object as `Row`; add controls directly to the returned container (for example, `gear:AddToggle(...)`). |
@@ -176,38 +176,39 @@ placement (`TopLeft`, `TopRight`, `BottomLeft`, `BottomRight`, `Center`, or
 `Crosshair`), text size, font, and crosshair offset. `:Clear()` dismisses active
 notifications.
 
-## Changing the logo
+## Icons and logo
 
-Set `Icon` in `CreateMenu` to a Roblox image asset identifier, such as
-`"rbxassetid://123456789"`. The `Icon` option also accepts a custom asset URI
-returned by an environment that provides `getcustomasset` or `getsynasset`.
+Icon options use the bundled Lucide icon atlas rather than Roblox image asset
+IDs. Set `Icon` to a `lucide:<name>` value, for example `"lucide:house"` or
+`"lucide:settings"`. Icon images are tinted by the current UI theme. The
+bundled atlas currently supports:
 
-The library does not decode Base64 itself. To use a Base64 PNG, decode it to a
-PNG file with a Base64 utility, write the file using `writefile`, resolve it
-using `getcustomasset` or `getsynasset`, then pass the returned URI as `Icon`:
+`activity`, `arrow-down`, `arrow-left`, `arrow-right`, `arrow-up`,
+`badge-check`, `badge-info`, `bell`, `bookmark`, `bot`, `bug`, `chart-no-axes-column-increasing`,
+`check`, `chevron-down`, `chevron-left`, `chevron-right`, `chevron-up`,
+`circle-check`, `circle-dot`, `circle-x`, `clock`, `component`, `copy`,
+`crosshair`, `download`, `external-link`, `eye`, `eye-off`, `flame`, `folder`,
+`gamepad-2`, `gauge`, `heart`, `house`, `info`, `keyboard`, `layout-grid`,
+`list`, `list-check`, `lock-keyhole`, `map`, `maximize`, `minimize`, `monitor`,
+`mouse-pointer-2`, `move`, `navigation`, `network`, `package`, `paintbrush`,
+`palette`, `pause`, `play`, `refresh-cw`, `rotate-cw`, `save`, `scan-eye`,
+`search`, `settings`, `shield`, `shield-alert`, `shirt`, `sliders-horizontal`,
+`smartphone`, `sparkles`, `star`, `swords`, `target`, `trophy`, `upload`,
+`user-cog`, `user-round`, `volume-2`, `wand-sparkles`, `wrench`, `x`, and `zap`.
+The icon atlas is generated from [Lucide](https://lucide.dev); applicable ISC
+and Feather/MIT license notices are included in `UI_Library.lua`.
 
-```lua
-local encodedPng = "YOUR_BASE64_PNG_WITHOUT_A_DATA_URI_PREFIX"
-local path = "GHP_scripts/my-menu/logo.png"
-if not isfolder("GHP_scripts") then
-    makefolder("GHP_scripts")
-end
-if not isfolder("GHP_scripts/my-menu") then
-    makefolder("GHP_scripts/my-menu")
-end
-writefile(path, base64decode(encodedPng))
-local logoAsset = (getcustomasset or getsynasset)(path)
-
-local menu = ui.CreateMenu({
-    Title = "My GHP menu",
-    Icon = logoAsset,
-    Directory = "GHP_scripts/my-menu",
-})
-```
-
-Replace `base64decode` with the Base64 decoder available in your environment.
-Menu logo images are displayed without accent-color tinting so their original
-colors remain intact.
+The supplied GHP PNG is embedded in the library and exposed as
+`ui.DefaultLogo`; it is also used when `Icon` is omitted. Menu logos retain
+their original colors and are not theme-tinted. The library writes its
+embedded logo and icon atlas to `GHP_scripts/ui-library-cache`, so it requires
+`writefile` and `getcustomasset` or `getsynasset` at initialization. To use a
+different built-in logo, replace the Base64 value in `GHP_LOGO_BASE64` in
+`UI_Library.lua` with the PNG's Base64 payload (omit the
+`data:image/png;base64,` prefix). Scripts using `ui.DefaultLogo` will pick up
+the replacement automatically. To override the logo for one menu, write a PNG
+to a file, resolve it with one of the custom-asset functions, and pass the
+returned URI as `Icon`.
 
 ## Example
 
@@ -237,5 +238,5 @@ profile save/load/delete/list features additionally require `writefile`,
 `readfile`, `delfile`, and `listfiles`. The GitHub-loading example also
 requires `loadstring` and `game:HttpGet`. Custom fonts, downloaded/local
 images, and clipboard support require their respective runtime APIs; they are
-not needed when using built-in fonts, `rbxassetid://...` image IDs, and no
-clipboard feature. `gethui` is optional; the library falls back to `CoreGui`.
+not needed when using built-in fonts and Lucide icons without clipboard
+features. `gethui` is optional; the library falls back to `CoreGui`.
