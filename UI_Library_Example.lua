@@ -1,5 +1,6 @@
+-- Load and initialize the standalone library from GitHub.
 local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
-local compile = assert(loadstring, "This example requires an executor with loadstring")
+local compile = assert(loadstring, "This example requires an environment with loadstring")
 local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
 local uiFactory = chunk()
 local ui = uiFactory()
@@ -12,7 +13,7 @@ end
 
 local menu = ui.CreateMenu({
 	Title = "Standalone UI Library Example",
-	Icon = "rbxassetid://118838006164746",
+	Icon = ui.DefaultLogo,
 	Directory = "GHP_scripts/rivals/ui-library-example",
 })
 environment.GhpUiLibraryExample = menu
@@ -20,7 +21,7 @@ environment.GhpUiLibraryExample = menu
 local mainTab = menu:AddTab({
 	Label = "Controls",
 	Description = "Demonstration of the available control types.",
-	Icon = "rbxassetid://106205298246017",
+	Icon = "lucide:house",
 })
 local grid = mainTab:Grid({ Columns = 2 })
 local left = grid:AddSection({ Title = "Basic controls", Side = "left" })
@@ -179,8 +180,8 @@ end)
 right:AddIconStrip({
 	Label = "Icon choices",
 	Options = {
-		{ Name = "One", Icon = "rbxassetid://106205298246017" },
-		{ Name = "Two", Icon = "rbxassetid://118838006164746" },
+		{ Name = "One", Icon = "lucide:house" },
+		{ Name = "Two", Icon = "lucide:settings" },
 	},
 	Default = "One",
 	OnChanged = function(value)
@@ -221,7 +222,7 @@ right:AddSkinChanger({
 		{
 			Name = "Example skin",
 			Title = "Example skin",
-			Image = "rbxassetid://118838006164746",
+			Image = ui.DefaultLogo,
 			PreviewColor = Color3.fromRGB(28, 34, 48),
 		},
 	},
