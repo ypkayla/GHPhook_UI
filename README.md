@@ -1,6 +1,7 @@
 # GHP UI Library
 
 **Credits: GHP (ypkayla).**
+**(LICENSED UNDER [LICENSE.md](.\LICENSE.md))**
 
 This guide describes the standalone Roblox Luau UI library. It initializes
 its own services, signals, cleanup manager, and UI helpers; it does not require
@@ -38,7 +39,10 @@ Important menu options:
 | Option | Meaning |
 | --- | --- |
 | `Title` | Initial window and watermark title. |
-| `Icon` | Defaults to `ui.DefaultLogo`; accepts a `lucide:<name>` icon or a custom image asset URI. |
+| `Icon` | Main window's top-left logo; also used by the watermark unless `WatermarkIcon` is set. Defaults to `ui.DefaultLogo`; accepts a `lucide:<name>` icon or a custom image asset URI. |
+| `IconSize` | Optional `Vector2` pixel size for the main window logo. Defaults to the responsive layout size. |
+| `WatermarkIcon` | Optional independent watermark logo; defaults to `Icon`. Accepts a Lucide icon or custom image asset URI. |
+| `WatermarkIconSize` | Optional `Vector2` pixel size for the watermark logo; defaults to `20x20`. |
 | `Directory` | Required path used for menu state and config-related files. |
 | `Config` | Optional reactive config adapter. Control `Config` paths only bind when this is supplied. |
 | `State`, `StateData` | Optional state manager and loaded state data. |
@@ -98,7 +102,7 @@ Change callbacks are `OnChanged(value)` and buttons use `OnClick()`.
 | `AddButton(options)` | `OnClick`, optional `Confirm`, and optional `Row` to attach to an existing row. |
 | `AddLabel(options)` | Adds a text label; `TextColor` and `TextSize` customize it. |
 | `AddDivider(options)` | Adds a visual divider; an optional `Label` can title it. |
-| `AddTextBox(options)` | `Placeholder`, `Default`, `MaxLength`, `FocusLostOnly`, `OnChanged(text)`, `Config`. |
+| `AddTextBox(options)` | `Placeholder`, `Default`, `MaxLength` (maximum sizing width), `InputWidth` (optional fixed pixel width, capped by `MaxLength`), `FocusLostOnly`, `OnChanged(text)`, `Config`. |
 | `AddDropdown(options)` | Single selection. `Options`, `Default`, optional `Labels`, `GetOptions`, `Search`, `Inline`, `CloseOnSelect`, `MaxWidth`, `OnChanged(value)`. `:SetOptions(options)` updates choices. |
 | `AddMultiDropdown(options)` | Multiple selection; `Default` is a list of selected option strings. Shares the dropdown options and `:SetOptions`. |
 | `AddList(options)` | List-style single selection. `Options`, `Default`, `Height`, `Search`, `SelectFirst`, `OnChanged(value)`. |
@@ -130,7 +134,7 @@ available when the source's value matches the group's condition.
 
 | Method | Behavior |
 | --- | --- |
-| `AddSettingsTab()` | Adds built-in menu, theme, notification, config-profile, background-image/blur, and startup settings. Returns the settings page and its helper results. |
+| `AddSettingsTab()` | Adds built-in menu, theme, notification, config-profile, background-image/blur, and startup settings. Includes a Show Watermark toggle. Returns the settings page and its helper results. |
 | `Dialog(options, buildCallback)` | Opens a modal dialog; options include page title/description and action/confirmation settings. The optional callback receives the dialog object for constructing pages/actions. |
 | `SetTitle(string)`, `SetFont(FontFace)` | Update the window title or menu font. |
 | `SetVisible(boolean, immediate?)` | Show or hide the menu; the optional second argument skips the visibility transition. |
@@ -195,6 +199,12 @@ bundled atlas currently supports:
 `search`, `settings`, `shield`, `shield-alert`, `shirt`, `sliders-horizontal`,
 `smartphone`, `sparkles`, `star`, `swords`, `target`, `trophy`, `upload`,
 `user-cog`, `user-round`, `volume-2`, `wand-sparkles`, `wrench`, `x`, and `zap`.
+The `Icon` option controls the main window's top-left logo and is reused by the
+watermark by default. Set `WatermarkIcon` for a different watermark image.
+Increase `IconSize` or `WatermarkIconSize` with a `Vector2` to make a compact
+logo more visible; for example, `IconSize = Vector2.new(56, 48)`. Both logos
+preserve their aspect ratio. The watermark can be shown or hidden from the
+built-in Settings tab or with `menu:SetWatermarkEnabled(boolean)`.
 The embedded sprite atlas is generated from [Lucide](https://lucide.dev) SVGs
 and carries their ISC license notice in `UI_Library.lua`. It is cached on first
 icon use in `GHP_scripts/ui-library-cache`.
