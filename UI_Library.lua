@@ -4544,6 +4544,37 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 		LUCIDE_ICON_INDEX[name] = index - 1
 	end
 	local embeddedAssetCache = {}
+	local BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	local BASE64_LOOKUP = {}
+	for index = 1, #BASE64_ALPHABET do
+		BASE64_LOOKUP[BASE64_ALPHABET:byte(index)] = index - 1
+	end
+	local function decodeBase64(encoded)
+		local output = table.create(math.floor(#encoded * 3 / 4))
+		local accumulator, bitCount, outputIndex = 0, 0, 0
+		for index = 1, #encoded do
+			local character = encoded:byte(index)
+			if character == 61 then
+				break
+			end
+			local value = BASE64_LOOKUP[character]
+			if value == nil then
+				if character ~= 9 and character ~= 10 and character ~= 13 and character ~= 32 then
+					error(string.format("Invalid Base64 character at byte %d.", index), 2)
+				end
+			else
+				accumulator = accumulator * 64 + value
+				bitCount += 6
+				if bitCount >= 8 then
+					bitCount -= 8
+					outputIndex += 1
+					output[outputIndex] = string.char(math.floor(accumulator / 2 ^ bitCount) % 256)
+					accumulator %= 2 ^ bitCount
+				end
+			end
+		end
+		return table.concat(output)
+	end
 	local function getEmbeddedPngAsset(base64, path, name)
 		if base64 == nil or base64 == "" then
 			return nil
@@ -4582,7 +4613,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					end
 				end
 			end
-			local decoded = HttpService:Base64Decode(base64:gsub("%s", ""))
+			local decoded = decodeBase64(base64)
 			local wrote, writeError = pcall(writeFile, path, decoded)
 			assert(wrote, string.format("Failed to cache %s: %s", name, tostring(writeError)))
 		end
