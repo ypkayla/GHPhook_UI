@@ -1,3 +1,4 @@
+-- Load and initialize the standalone library from GitHub.
 local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
 local compile = assert(loadstring, "This example requires an environment with loadstring")
 local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
