@@ -484,10 +484,10 @@ local function createStandaloneDependencies()
 					reject("Downloading image URLs requires the writefile executor API.")
 					return
 				end
-				local path = "kiciarebuild/ui-library-cache/" .. services.HttpService:GenerateGUID(false) .. ".png"
+				local path = "GHP_scripts/ui-library-cache/" .. services.HttpService:GenerateGUID(false) .. ".png"
 				if makeFolder ~= nil then
-					pcall(makeFolder, "kiciarebuild")
-					pcall(makeFolder, "kiciarebuild/ui-library-cache")
+					pcall(makeFolder, "GHP_scripts")
+					pcall(makeFolder, "GHP_scripts/ui-library-cache")
 				end
 				local wrote, writeError = pcall(writeFile, path, body)
 				if not wrote then
@@ -2060,9 +2060,9 @@ return function(dependencies)
 	do -- s
 		local function createModule()
 			return table.freeze({
-				Medium = Font.new("rbxassetid://12187365364", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-				SemiBold = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-				Bold = Font.new("rbxassetid://12187365364", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				Medium = Font.new("rbxassetid://111111111111111", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				SemiBold = Font.new("rbxassetid://111111111111111", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+				Bold = Font.new("rbxassetid://111111111111111", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
 			})
 		end
 
@@ -4480,7 +4480,7 @@ return function(dependencies)
 				instance.PaddingLeft = UDim.new(0, 29)
 				instance.Parent = textButton
 				local imageLabel = Instance.new("ImageLabel")
-				imageLabel.Image = "rbxassetid://73347151382921"
+				imageLabel.Image = "rbxassetid://111111111111111"
 				imageLabel.ImageColor3 = v121.get(constants[174])
 				imageLabel.ImageTransparency = 1
 				imageLabel.BackgroundTransparency = 1
@@ -4773,7 +4773,7 @@ return function(dependencies)
 				arg2.Batch:Bind(uiStroke, "Color", "Outline")
 				uiStroke.Parent = textButton
 				local imageLabel = Instance.new("ImageLabel")
-				imageLabel.Image = "rbxassetid://84796267467531"
+				imageLabel.Image = "rbxassetid://111111111111111"
 				imageLabel.BackgroundTransparency = constants[63]
 				imageLabel.Size = UDim2.fromOffset(9, 5)
 				imageLabel.BorderSizePixel = constants[186]
@@ -6173,7 +6173,7 @@ return function(dependencies)
 					uiCorner5.Parent = frame12
 					local imageLabel = Instance.new("ImageLabel")
 					imageLabel.ScaleType = Enum.ScaleType.Tile
-					imageLabel.Image = "rbxassetid://18274452449"
+					imageLabel.Image = "rbxassetid://111111111111111"
 					imageLabel.BackgroundTransparency = constants[63]
 					imageLabel.Size = UDim2.fromScale(1, 1)
 					imageLabel.TileSize = UDim2.fromOffset(8, 8)
@@ -6473,7 +6473,7 @@ return function(dependencies)
 					local imageLabel2 = Instance.new("ImageLabel")
 					imageLabel2.Active = true
 					imageLabel2.AnchorPoint = Vector2.new(0.5, 0)
-					imageLabel2.Image = "rbxassetid://127264563810956"
+					imageLabel2.Image = "rbxassetid://111111111111111"
 					imageLabel2.BackgroundTransparency = constants[63]
 					imageLabel2.Position = UDim2.new(0.5, -1, constants[186], -1)
 					imageLabel2.Size = UDim2.fromOffset(10, 29)
@@ -6482,7 +6482,7 @@ return function(dependencies)
 					imageLabel2.Parent = frame19
 					local imageLabel3 = Instance.new("ImageLabel")
 					imageLabel3.Size = UDim2.new(constants[63], -2, 0, 27)
-					imageLabel3.Image = "rbxassetid://127264563810956"
+					imageLabel3.Image = "rbxassetid://111111111111111"
 					imageLabel3.BackgroundTransparency = 1
 					imageLabel3.Position = UDim2.fromOffset(1, 1)
 					imageLabel3.ZIndex = 2
@@ -6680,7 +6680,7 @@ return function(dependencies)
 							imageButton.AutoButtonColor = false
 							imageButton.ImageColor3 = v122.get(constants[120])
 							imageButton.AnchorPoint = Vector2.new(0.5, 0)
-							imageButton.Image = "rbxassetid://127264563810956"
+							imageButton.Image = "GHPsrbxassetid://111111111111111"
 							imageButton.BackgroundTransparency = 1
 							imageButton.Position = UDim2.new(v144.Time, -constants[63], 0, -constants[63])
 							imageButton.Size = flag19 and UDim2.fromOffset(10, 29) or UDim2.fromOffset(8, 24)
@@ -6688,7 +6688,7 @@ return function(dependencies)
 							imageButton.Parent = frame20
 							local imageLabel4 = Instance.new("ImageLabel")
 							imageLabel4.Size = UDim2.new(constants[63], -2, 1, -constants[56])
-							imageLabel4.Image = "rbxassetid://127264563810956"
+							imageLabel4.Image = "GHPsrbxassetid://111111111111111"
 							imageLabel4.BackgroundTransparency = 1
 							imageLabel4.Position = UDim2.fromOffset(constants[63], constants[63])
 							imageLabel4.BorderSizePixel = 0
@@ -8300,7 +8300,7 @@ return function(dependencies)
 
 			local function createImageButton(arg, parent, arg2)
 				local imageButton = Instance.new("ImageButton")
-				imageButton.Image = "rbxassetid://127083575814915"
+				imageButton.Image = "GHPsrbxassetid://111111111111111"
 				imageButton.BackgroundTransparency = 1
 				imageButton.AnchorPoint = Vector2.new(1, 0.5)
 				imageButton.Position = UDim2.fromScale(1, 0.5)
@@ -8879,7 +8879,7 @@ return function(dependencies)
 				instance2.Parent = instance
 				local imageLabel = Instance.new("ImageLabel")
 				imageLabel.ImageTransparency = constants[63]
-				imageLabel.Image = "rbxassetid://73347151382921"
+				imageLabel.Image = "GHPsrbxassetid://111111111111111"
 				imageLabel.ImageColor3 = v118.get(constants[174])
 				imageLabel.BackgroundTransparency = constants[63]
 				imageLabel.AnchorPoint = Vector2.new(0, 0.5)
@@ -10059,7 +10059,7 @@ return function(dependencies)
 				imageLabel.Position = UDim2.fromScale(0.5, 0.5)
 				imageLabel.Size = arg2.ImageSize or UDim2.fromOffset(constants[91], 100)
 				imageLabel.ScaleType = Enum.ScaleType.Fit
-				imageLabel.Image = arg2.Image or "rbxassetid://89204837120267"
+				imageLabel.Image = arg2.Image or "GHPsrbxassetid://111111111111111"
 				imageLabel.Parent = frame2
 				local frame3 = Instance.new("Frame")
 				frame3.AnchorPoint = Vector2.new(1, 0)
@@ -16757,7 +16757,7 @@ return function(dependencies)
 				imageLabel.Size = UDim2.fromOffset(16, constants[13])
 				imageLabel.BackgroundTransparency = 1
 				imageLabel.BorderSizePixel = 0
-				imageLabel.Image = "rbxassetid://72296609649861"
+				imageLabel.Image = "GHPsrbxassetid://111111111111111"
 				imageLabel.ImageColor3 = v119.get("Unselected")
 				imageLabel.Parent = frame
 				local textLabel = Instance.new("TextLabel")
@@ -16813,7 +16813,7 @@ return function(dependencies)
 				imageButton.Size = UDim2.fromOffset(16, 16)
 				imageButton.BackgroundTransparency = 1
 				imageButton.BorderSizePixel = 0
-				imageButton.Image = "rbxassetid://116396312853810"
+				imageButton.Image = "GHPsrbxassetid://111111111111111"
 				imageButton.ImageColor3 = v119.get("Unselected")
 				imageButton.Visible = false
 				imageButton.AutoButtonColor = false
@@ -17354,7 +17354,7 @@ return function(dependencies)
 				local n = v123.Rail.Width + outerInset
 				local v124 = arg2.Panel:AddButton(
 					v121,
-					{ Label = arg4.Label, Icon = arg4.Icon or "rbxassetid://108815781932261" }
+					{ Label = arg4.Label, Icon = arg4.Icon or "GHPsrbxassetid://111111111111111" }
 				)
 				local canvasGroup = Instance.new("CanvasGroup")
 				canvasGroup.BackgroundTransparency = 1
@@ -17968,10 +17968,10 @@ return function(dependencies)
 				fn37(frame, 1, arg3.Icon, v119)
 				local v120 = createTextLabel(frame, constants[56], arg3.Title, main, v119)
 				fn36(frame, 3, main, v119)
-				fn37(frame, 4, "rbxassetid://83187029320661", v119)
+				fn37(frame, 4, "GHPsrbxassetid://111111111111111", v119)
 				local v121 = createTextLabel(frame, 5, arg3.Username, main, v119)
 				fn36(frame, 6, main, v119)
-				fn37(frame, 7, "rbxassetid://113103422688495", v119)
+				fn37(frame, 7, "GHPsrbxassetid://111111111111111", v119)
 				local v122 = createTextLabel(frame, 8, "60 FPS", main, v119)
 				v122.AutomaticSize = Enum.AutomaticSize.Y
 				v122.Size = UDim2.fromOffset(constants[7], 0)
@@ -19640,19 +19640,19 @@ return function(dependencies)
 
 			local tbl19 = {
 				Minecraftia = {
-					Url = "https://github.com/kiciahook-org/v3-assets/raw/refs/heads/main/Minecraftia-Regular.ttf",
+					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Minecraftia-Regular.ttf",
 					FileName = "Minecraftia-Regular.ttf",
 					Weight = Enum.FontWeight.Regular,
 					Style = Enum.FontStyle.Normal,
 				},
 				[constants[43]] = {
-					Url = "https://github.com/kiciahook-org/v3-assets/raw/refs/heads/main/Proggy-Clean.ttf",
+					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Proggy-Clean.ttf",
 					FileName = "Proggy-Clean.ttf",
 					Weight = Enum.FontWeight.Regular,
 					Style = Enum.FontStyle.Normal,
 				},
 				[constants[125]] = {
-					Url = "https://github.com/kiciahook-org/v3-assets/raw/refs/heads/main/Proggy-Tiny.ttf",
+					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Proggy-Tiny.ttf",
 					FileName = "Proggy-Tiny.ttf",
 					Weight = Enum.FontWeight.Regular,
 					Style = Enum.FontStyle.Normal,
@@ -19681,7 +19681,7 @@ return function(dependencies)
 
 			local function fn37(arg, arg2)
 				return v116.new(function(arg3)
-					local str7 = string.format("%s/%s", "kiciarebuild/fonts", tostring(arg2.FileName))
+					local str7 = string.format("%s/%s", "GHP_scripts/fonts", tostring(arg2.FileName))
 
 					if not isfile(str7) then
 						local v120, v121 = protectedCall(function()
@@ -19742,7 +19742,7 @@ return function(dependencies)
 						},
 					}
 
-					local str8 = string.format("%s/%s.json", "kiciarebuild/fonts", tostring(arg))
+					local str8 = string.format("%s/%s.json", "GHP_scripts/fonts", tostring(arg))
 					local v122, v123 = protectedCall(writefile, str8, v119:JSONEncode(tbl20))
 
 					if not v122 then
@@ -19789,7 +19789,7 @@ return function(dependencies)
 					arg._fontByName[k] = Font.fromEnum(v120)
 				end
 
-				v118("kiciarebuild/fonts")
+				v118("GHP_scripts/fonts")
 				local tbl20 = {}
 				local flag19 = true
 
@@ -20871,8 +20871,8 @@ end
 
 				arg:AddTextBox({
 					Label = "Raw Script URL",
-					Tooltip = "A direct URL that returns the Ghp_rivals.lua source text. Required for re-running when you launch by pasting.",
-					Placeholder = "https://example.com/Ghp_rivals.lua",
+					Tooltip = "A direct URL that returns the .lua source text. Required for re-running when you launch by pasting.",
+					Placeholder = "https://example.com/something.lua",
 					MaxLength = 500,
 					FocusLostOnly = true,
 					Config = urlPath,
@@ -20932,7 +20932,7 @@ end
 			end
 
 			return function(arg, arg2, arg3, arg4, arg5, arg6, arg7)
-				local v120 = arg2:AddTab({ Label = "General", Icon = "rbxassetid://106205298246017" })
+				local v120 = arg2:AddTab({ Label = "General", Icon = "GHPsrbxassetid://111111111111111" })
 				local v121 = v120:Grid({ Columns = 2 })
 				fn36(arg, arg4, v121)
 				local v122 = arg2:AddTab({ Label = "Config Profiles" })
@@ -21102,7 +21102,7 @@ end
 				local obj = setmetatable({
 					_trove = v136,
 					Title = arg.Title or "GHP.wtf",
-					Icon = arg.Icon or "rbxassetid://118838006164746",
+					Icon = arg.Icon or "GHPsrbxassetid://111111111111111",
 					Directory = directory,
 					ConfigVersion = arg.ConfigVersion or constants[63],
 					Fonts = { Main = Default },
@@ -21277,7 +21277,7 @@ end
 			class.AddSettingsTab = function(arg)
 				local v136 = arg:AddTab({
 					Label = "Settings",
-					Icon = "rbxassetid://106205298246017",
+					Icon = "rbxassetid://111111111111111",
 					Description = "Menu preferences, config management, and theme customization.",
 				})
 
