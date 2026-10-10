@@ -1,7 +1,7 @@
 # GHP UI Library
 
 **Credits: GHP (ypkayla).**
-**(LICENSED UNDER [LICENSE.md](.\LICENSE.md))**
+**(LICENSED UNDER [LICENSE.md](LICENSE.md))**
 
 This guide describes the standalone Roblox Luau UI library. It initializes
 its own services, signals, cleanup manager, and UI helpers; it does not require
