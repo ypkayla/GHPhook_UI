@@ -5424,11 +5424,14 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 						return l:split(".")
 					end,
 					NavigateTo = function(l, I, W)
-						if #I == 0 then
+						if type(l) ~= "table" or type(I) ~= "table" or #I == 0 then
 							return nil
 						end
 						for N = 1, #I, 1 do
 							local P = I[N]
+							if P == nil then
+								return nil
+							end
 							if N == #I then
 								return l[P]
 							end
@@ -5691,6 +5694,10 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				return v117.NavigateTo(I.Data, W, N)
 			end
 			class.Set = function(I, W, N)
+				if type(W) ~= "table" or #W == 0 then
+					warn("[GHP UI] Ignoring config update with an invalid path.")
+					return
+				end
 				local P = I._middleware
 				local a = P.Set
 				N = if a ~= nil then (a(P, W, N)) else N
@@ -22563,6 +22570,8 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					PageHolder = frame3,
 					_backgroundImage = backgroundImage,
 					_backgroundBlurLayers = backgroundBlurLayers,
+					_backgroundPageImages = {},
+					_backgroundAsset = "",
 					_backgroundResolver = backgroundResolver,
 					_backgroundBlurSize = 0,
 					_backgroundRequest = 0,
@@ -22666,17 +22675,85 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				return obj
 			end
 
+			local function createPageBackground(arg, tab)
+				local page = tab._page
+				local record = { Image = nil, BlurLayers = {} }
+
+				for _, offset in
+					{
+						Vector2.new(-1, -1),
+						Vector2.new(0, -1),
+						Vector2.new(1, -1),
+						Vector2.new(-1, 0),
+						Vector2.new(1, 0),
+						Vector2.new(-1, 1),
+						Vector2.new(0, 1),
+						Vector2.new(1, 1),
+					}
+				do
+					local image = Instance.new("ImageLabel")
+					image.Name = "BackgroundBlurLayer"
+					image.BackgroundTransparency = 1
+					image.Position = UDim2.fromOffset(1, 1)
+					image.Size = UDim2.new(1, -2, 1, -2)
+					image.ScaleType = Enum.ScaleType.Crop
+					image.ZIndex = page.ZIndex
+					image.Active = false
+					image.Image = arg._backgroundAsset
+					image.Visible = arg._backgroundAsset ~= "" and arg._backgroundBlurSize > 0
+					image.Parent = page
+					local corner = Instance.new("UICorner")
+					corner.CornerRadius = UDim.new(0, constants[12])
+					corner.Parent = image
+					table.insert(record.BlurLayers, { Image = image, Offset = offset })
+				end
+
+				local image = Instance.new("ImageLabel")
+				image.Name = "BackgroundImage"
+				image.BackgroundTransparency = 1
+				image.Position = UDim2.fromOffset(1, 1)
+				image.Size = UDim2.new(1, -2, 1, -2)
+				image.ScaleType = Enum.ScaleType.Crop
+				image.ZIndex = page.ZIndex
+				image.Active = false
+				image.Image = arg._backgroundAsset
+				image.ImageTransparency = arg._backgroundBlurSize / 24 * 0.45
+				image.Visible = arg._backgroundAsset ~= ""
+				image.Parent = page
+				local corner = Instance.new("UICorner")
+				corner.CornerRadius = UDim.new(0, constants[12])
+				corner.Parent = image
+				record.Image = image
+				table.insert(arg._backgroundPageImages, record)
+				tab._trove:Add(function()
+					local index = table.find(arg._backgroundPageImages, record)
+					if index ~= nil then
+						table.remove(arg._backgroundPageImages, index)
+					end
+				end)
+				arg:SetBackgroundBlur(arg._backgroundBlurSize)
+			end
+
 			class.SetBackgroundImage = function(arg, url)
 				arg._backgroundRequest += 1
 				local request = arg._backgroundRequest
 				url = type(url) == "string" and url:match("^%s*(.-)%s*$") or ""
 				if url == "" then
+					arg._backgroundAsset = ""
 					arg._backgroundImage.Image = ""
 					arg._backgroundImage.Visible = false
 					for _, layer in arg._backgroundBlurLayers do
 						layer.Image.Visible = false
 					end
-					arg.PageHolder.BackgroundTransparency = 1
+					for _, record in arg._backgroundPageImages do
+						record.Image.Image = ""
+						record.Image.Visible = false
+						for _, layer in record.BlurLayers do
+							layer.Image.Image = ""
+							layer.Image.Visible = false
+						end
+					end
+					arg.PageHolder.BackgroundTransparency = 0
 					return
 				end
 
@@ -22699,10 +22776,19 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 						)
 						return
 					end
+					arg._backgroundAsset = asset
 					arg._backgroundImage.Image = asset
-					arg._backgroundImage.Visible = true
+					arg._backgroundImage.Visible = false
 					for _, layer in arg._backgroundBlurLayers do
 						layer.Image.Image = asset
+						layer.Image.Visible = false
+					end
+					for _, record in arg._backgroundPageImages do
+						record.Image.Image = asset
+						record.Image.Visible = true
+						for _, layer in record.BlurLayers do
+							layer.Image.Image = asset
+						end
 					end
 					arg.PageHolder.BackgroundTransparency = 1
 					arg:SetBackgroundBlur(arg._backgroundBlurSize)
@@ -22749,12 +22835,27 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					layer.Image.Position = UDim2.fromOffset(1 + x, 1 + y)
 					layer.Image.Size = UDim2.new(1, -2 - 2 * math.abs(x), 1, -2 - 2 * math.abs(y))
 					layer.Image.ImageTransparency = 1 - amount * 0.2
-					layer.Image.Visible = arg._backgroundImage.Visible and amount > 0
+					layer.Image.Visible = false
+				end
+				for _, record in arg._backgroundPageImages do
+					record.Image.ImageTransparency = amount * 0.45
+					for _, layer in record.BlurLayers do
+						local offset = layer.Offset
+						local x = offset.X * radius
+						local y = offset.Y * radius
+						layer.Image.Position = UDim2.fromOffset(1 + x, 1 + y)
+						layer.Image.Size =
+							UDim2.new(1, -2 - 2 * math.abs(x), 1, -2 - 2 * math.abs(y))
+						layer.Image.ImageTransparency = 1 - amount * 0.2
+						layer.Image.Visible = arg._backgroundAsset ~= "" and amount > 0
+					end
 				end
 			end
 
 			class.AddTab = function(arg, arg2)
-				return v120.new(arg._menu, arg, arg._trove, arg2)
+				local tab = v120.new(arg._menu, arg, arg._trove, arg2)
+				createPageBackground(arg, tab)
+				return tab
 			end
 
 			class.SetVisible = function(arg, open)
