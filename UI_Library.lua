@@ -1,4 +1,568 @@
+local function createStandaloneDependencies()
+	local function getGlobal(name)
+		local value
+		if getfenv ~= nil then
+			pcall(function()
+				value = getfenv(0)[name]
+			end)
+			if type(value) ~= "function" then
+				pcall(function()
+					value = getfenv()[name]
+				end)
+			end
+		end
+		if type(value) ~= "function" and getgenv ~= nil then
+			pcall(function()
+				value = getgenv()[name]
+			end)
+		end
+		return type(value) == "function" and value or nil
+	end
+
+	local constants = {
+		[2] = "ReactiveStore", [3] = "Toggle", [4] = "UIListLayout", [5] = "BackgroundColor3", [6] = 0,
+		[7] = 60, [8] = 60, [9] = 20, [12] = 12, [13] = 14, [14] = "Settings", [15] = 120,
+		[16] = "min", [17] = 200, [18] = "0", [19] = 200, [20] = "Vector3", [21] = "Always",
+		[22] = "", [23] = 1.4707963267948965, [24] = "Roboto", [25] = 24, [26] = 4, [27] = "Color",
+		[28] = 0.2, [29] = "Size", [30] = 0.35, [31] = 29, [32] = 24, [33] = "Button", [34] = true,
+		[35] = "ConfigManager", [36] = "ApplyMigrations", [37] = "TextBounds", [38] = "DeleteFile",
+		[39] = "Slider", [40] = "...", [42] = "left", [43] = "Proggy Clean", [44] = "Enabled", [45] = 90,
+		[46] = "UIGradient", [47] = "CanvasGroup", [48] = 0.3, [49] = 2, [50] = "Side", [51] = " ",
+		[52] = "BottomRight", [53] = 92, [54] = 6, [55] = "Mode", [56] = 2, [57] = "TextColor",
+		[58] = 80, [59] = "Font", [60] = 29, [61] = 20, [62] = 0.1, [63] = 1, [64] = "ScrollingFrame",
+		[65] = 200, [66] = 0.5, [67] = 100, [68] = "table", [69] = "Catalog unavailable",
+		[70] = "GradientDark", [71] = 10, [72] = 12, [73] = "Keybind", [74] = 0.9, [75] = "None",
+		[76] = "LoadFromFile", [77] = "FireServer", [78] = 720, [79] = 255, [80] = "Text", [81] = 1,
+		[82] = "Realize() can only be called on the root", [83] = 64, [84] = 0.5, [85] = "UIStroke",
+		[87] = 0.8, [88] = "TabHighlight", [89] = "Loading", [90] = "Gradient", [91] = 100,
+		[92] = "TextButton", [93] = "ColorSequence", [94] = "Options", [95] = "number", [96] = "Unselected",
+		[97] = "Mode", [98] = "UICorner", [99] = "ExportToJson", [100] = 14, [101] = 0.5, [102] = 231,
+		[103] = 52, [104] = "Fonts", [105] = 0.85, [106] = "Menu Keybind", [107] = 40, [108] = 255,
+		[109] = 77, [110] = 70, [111] = "Fetching items...", [112] = "Invisible", [113] = "UIPadding",
+		[114] = "primary", [115] = "Color3", [116] = "boolean", [118] = 16, [119] = 159, [120] = "Outline",
+		[121] = "ImageButton", [122] = 8, [123] = 19, [124] = "X", [125] = "Proggy Tiny", [126] = 0.15,
+		[127] = "CFrame", [128] = "Frame", [129] = "Show Watermark", [131] = "AbsoluteSize",
+		[132] = "Breathing", [133] = 10, [134] = "GradientTop", [135] = "TextLabel",
+		[136] = "Unselected Text", [137] = 256, [138] = 0.85, [139] = "Accent", [140] = "danger",
+		[141] = "GradientDeep", [142] = "Silent Load", [143] = 32, [144] = 20,
+		[145] = "Dialog has been destroyed", [146] = "ImageLabel", [147] = 0.1, [148] = "TextBox",
+		[149] = 1, [150] = "stop", [151] = "family", [153] = false, [154] = "ScrollBarImageColor3",
+		[155] = 3, [156] = "ImageColor3", [157] = 20, [158] = "secondary", [159] = 20, [160] = 50,
+		[161] = 0.5, [162] = 8, [163] = 80, [164] = "hue", [165] = "string", [166] = "family",
+		[167] = "TextColor3", [168] = "ElementBackground", [169] = "FromJson", [170] = 9, [172] = "none",
+		[173] = 0.88, [174] = "Unselected", [175] = 5, [176] = "UISizeConstraint",
+		[177] = "Try a different search.", [178] = "ElementBackground", [181] = 10, [182] = "HttpService",
+		[183] = 72, [184] = "Color", [186] = 0, [187] = "GradientMid", [189] = "Position",
+		[190] = "Search...", [191] = "TabShadow", [192] = 30, [193] = 0, [194] = "Hold", [195] = 0.7,
+		[196] = "Viewport", [197] = "Y", [198] = 400, [199] = "Unload", [200] = 26,
+	}
+
+	local services = {
+		Players = game:GetService("Players"),
+		ReplicatedStorage = game:GetService("ReplicatedStorage"),
+		RunService = game:GetService("RunService"),
+		UserInputService = game:GetService("UserInputService"),
+		HttpService = game:GetService("HttpService"),
+	}
+
+	local Signal = {}
+	Signal.__index = Signal
+	function Signal.new()
+		return setmetatable({ _handlers = {} }, Signal)
+	end
+	function Signal:Connect(callback)
+		local signal = self
+		local handler = { Callback = callback, Connected = true }
+		table.insert(self._handlers, handler)
+		local connection = { Connected = true }
+		function connection:Disconnect()
+			if not handler.Connected then
+				return
+			end
+			handler.Connected = false
+			self.Connected = false
+			local index = table.find(signal._handlers, handler)
+			if index ~= nil then
+				table.remove(signal._handlers, index)
+			end
+		end
+		return connection
+	end
+	function Signal:Once(callback)
+		local connection
+		connection = self:Connect(function(...)
+			connection:Disconnect()
+			callback(...)
+		end)
+		return connection
+	end
+	function Signal:Fire(...)
+		for _, handler in table.clone(self._handlers) do
+			if handler.Connected then
+				task.spawn(handler.Callback, ...)
+			end
+		end
+	end
+	function Signal:FireSync(...)
+		for _, handler in table.clone(self._handlers) do
+			if handler.Connected then
+				handler.Callback(...)
+			end
+		end
+	end
+	function Signal:Destroy()
+		table.clear(self._handlers)
+	end
+
+	local Trove = {}
+	Trove.__index = Trove
+	function Trove.new(name)
+		return setmetatable({ _name = name, _items = {} }, Trove)
+	end
+	local function cleanItem(item)
+		local itemType = typeof(item)
+		if itemType == "RBXScriptConnection" then
+			item:Disconnect()
+		elseif itemType == "Instance" then
+			item:Destroy()
+		elseif itemType == "thread" then
+			pcall(task.cancel, item)
+		elseif type(item) == "function" then
+			item()
+		elseif type(item) == "table" then
+			if type(item.Destroy) == "function" then
+				item:Destroy()
+			elseif type(item.Disconnect) == "function" then
+				item:Disconnect()
+			end
+		end
+	end
+	function Trove:Add(item)
+		table.insert(self._items, item)
+		return item
+	end
+	function Trove:Connect(signal, callback)
+		return self:Add(signal:Connect(callback))
+	end
+	function Trove:Extend()
+		return self:Add(Trove.new(self._name))
+	end
+	function Trove:Remove(item, keep)
+		local index = table.find(self._items, item)
+		if index ~= nil then
+			table.remove(self._items, index)
+			if not keep then
+				cleanItem(item)
+			end
+		end
+	end
+	function Trove:AddPromise(promise)
+		if tostring(promise:getStatus()) == "Started" then
+			self:Add(promise)
+			promise:finally(function()
+				if not self._cleaning then
+					self:Remove(promise, true)
+				end
+			end)
+		end
+		return promise
+	end
+	function Trove:AttachExtend(instance)
+		local subTrove = self:Extend()
+		subTrove:Connect(instance.Destroying, function()
+			self:Remove(subTrove)
+		end)
+		return subTrove
+	end
+	function Trove:Clean()
+		local items = self._items
+		self._items = {}
+		self._cleaning = true
+		for index = #items, 1, -1 do
+			cleanItem(items[index])
+		end
+		self._cleaning = false
+	end
+	Trove.Destroy = Trove.Clean
+
+	local runtime = {
+		fn = getGlobal,
+	}
+	local modules = { cache = {} }
+	modules.k = function()
+		return { new = function(name) return Trove.new(name) end }
+	end
+	modules.P = function()
+		return {
+			bind = function(trove, config, control, path, options)
+				local debounce = options ~= nil and options.Debounce == true
+				local writeBack = options ~= nil and options.WriteBack or nil
+				control:Set(config:Get(path), true)
+				trove:Connect(config:Changed(path), function(value)
+					control:Set(value, true)
+				end)
+				local pendingValue, scheduled = nil, false
+				trove:Connect(control.Changed, function(value)
+					if not debounce then
+						if writeBack then
+							writeBack(value)
+						else
+							config:Set(path, value)
+						end
+						return
+					end
+					pendingValue = value
+					if scheduled then
+						return
+					end
+					scheduled = true
+					task.delay(0.05, function()
+						scheduled = false
+						if writeBack then
+							writeBack(pendingValue)
+						else
+							config:Set(path, pendingValue)
+						end
+					end)
+				end)
+			end,
+		}
+	end
+
+	local userInputService = services.UserInputService
+	local function currentCamera()
+		return workspace.CurrentCamera
+	end
+	local function cameraViewportSize()
+		local camera = currentCamera()
+		return camera and camera.ViewportSize or Vector2.new(1920, 1080)
+	end
+	local viewportHelpers = {}
+	function viewportHelpers.appendPath(path, key)
+		local result = table.clone(path)
+		table.insert(result, key)
+		return result
+	end
+	function viewportHelpers.currentViewportSize()
+		return cameraViewportSize()
+	end
+	function viewportHelpers.connectCurrentCameraViewport(trove, callback)
+		local cameraTrove = trove:Extend()
+		local function bind()
+			cameraTrove:Clean()
+			local camera = currentCamera()
+			if camera == nil then
+				return
+			end
+			cameraTrove:Connect(camera:GetPropertyChangedSignal("ViewportSize"), function()
+				callback(camera.ViewportSize)
+			end)
+			callback(camera.ViewportSize)
+		end
+		trove:Connect(workspace:GetPropertyChangedSignal("CurrentCamera"), bind)
+		bind()
+	end
+	function viewportHelpers.absoluteToLayerOffset(layer, position)
+		return position - layer.AbsolutePosition
+	end
+	function viewportHelpers.clampOffsetToViewport(x, y, size)
+		local viewportSize = cameraViewportSize()
+		return math.clamp(x, 0, math.max(0, viewportSize.X - size.X)),
+			math.clamp(y, 0, math.max(0, viewportSize.Y - size.Y))
+	end
+	function viewportHelpers.clampGuiToViewport(gui)
+		local viewportSize = cameraViewportSize()
+		local absolutePosition, absoluteSize = gui.AbsolutePosition, gui.AbsoluteSize
+		local deltaX = math.clamp(absolutePosition.X, 0, math.max(0, viewportSize.X - absoluteSize.X))
+			- absolutePosition.X
+		local deltaY = math.clamp(absolutePosition.Y, 0, math.max(0, viewportSize.Y - absoluteSize.Y))
+			- absolutePosition.Y
+		if deltaX ~= 0 or deltaY ~= 0 then
+			local position = gui.Position
+			gui.Position = UDim2.new(position.X.Scale, position.X.Offset + deltaX, position.Y.Scale, position.Y.Offset + deltaY)
+		end
+	end
+	function viewportHelpers.snapPosition(position)
+		return UDim2.new(position.X.Scale, math.round(position.X.Offset), position.Y.Scale, math.round(position.Y.Offset))
+	end
+	function viewportHelpers.onScreenKeyboardTop()
+		local ok, visible = pcall(function()
+			return userInputService.OnScreenKeyboardVisible
+		end)
+		if not ok or not visible then
+			return nil
+		end
+		local positionOk, position = pcall(function()
+			return userInputService.OnScreenKeyboardPosition
+		end)
+		return positionOk and position and position.Y or nil
+	end
+	function viewportHelpers.connectOnScreenKeyboard(trove, callback)
+		pcall(function()
+			trove:Connect(userInputService:GetPropertyChangedSignal("OnScreenKeyboardVisible"), callback)
+		end)
+		pcall(function()
+			trove:Connect(userInputService:GetPropertyChangedSignal("OnScreenKeyboardPosition"), callback)
+		end)
+	end
+	function viewportHelpers.getPointerPosition()
+		return userInputService:GetMouseLocation()
+	end
+	function viewportHelpers.matchesPointerDrag(input, started, movement)
+		if started ~= nil and started.UserInputType == Enum.UserInputType.Touch then
+			return input == started
+		end
+		return input.UserInputType == movement
+	end
+	function viewportHelpers.round(value, step)
+		if step == nil or step == 0 then
+			return value
+		end
+		return math.round(value / step) * step
+	end
+	viewportHelpers.KeyNames = {
+		[Enum.UserInputType.MouseButton1] = "MB1",
+		[Enum.UserInputType.MouseButton2] = "MB2",
+		[Enum.UserInputType.MouseButton3] = "MB3",
+		[Enum.KeyCode.LeftShift] = "LShift",
+		[Enum.KeyCode.RightShift] = "RShift",
+		[Enum.KeyCode.LeftControl] = "LCtrl",
+		[Enum.KeyCode.RightControl] = "RCtrl",
+		[Enum.KeyCode.LeftAlt] = "LAlt",
+		[Enum.KeyCode.RightAlt] = "RAlt",
+	}
+	function viewportHelpers.serializeKey(key)
+		if typeof(key) ~= "EnumItem" then
+			return nil
+		end
+		return tostring(key.EnumType) .. "." .. key.Name
+	end
+	function viewportHelpers.deserializeKey(serialized)
+		if type(serialized) ~= "string" then
+			return nil
+		end
+		local enumName, itemName = serialized:match("^(%w+)%.(%w+)$")
+		if enumName == nil then
+			return nil
+		end
+		local ok, value = pcall(function()
+			return Enum[enumName][itemName]
+		end)
+		return ok and value or nil
+	end
+	function viewportHelpers.findScrollingAncestor(instance)
+		local parent = instance and instance.Parent
+		while parent ~= nil do
+			if parent:IsA("ScrollingFrame") then
+				return parent
+			end
+			parent = parent.Parent
+		end
+		return nil
+	end
+	function viewportHelpers.isEffectivelyVisible(gui)
+		local parent = gui
+		while parent ~= nil and parent ~= game do
+			if parent:IsA("GuiObject") and not parent.Visible then
+				return false
+			end
+			if parent:IsA("LayerCollector") then
+				return parent.Enabled
+			end
+			parent = parent.Parent
+		end
+		return false
+	end
+	function viewportHelpers.ensureStorageDirectories(directory)
+		local isFolder, makeFolder = getGlobal("isfolder"), getGlobal("makefolder")
+		if isFolder == nil or makeFolder == nil or type(directory) ~= "string" then
+			return
+		end
+		local function ensure(path)
+			local current
+			for part in path:gmatch("[^/]+") do
+				current = current and (current .. "/" .. part) or part
+				pcall(function()
+					if not isFolder(current) then
+						makeFolder(current)
+					end
+				end)
+			end
+		end
+		ensure(directory)
+		ensure(directory .. "/configs")
+	end
+	modules.w = function()
+		return viewportHelpers
+	end
+
+	local function normalizeImageSource(source)
+		return source:match("^%s*(.-)%s*$") or ""
+	end
+	local function classifyImageSource(source)
+		if source:match("^rbxasset%w*://") ~= nil then
+			return "Asset"
+		end
+		if source:match("^https?://") ~= nil then
+			return "Url"
+		end
+		return "File"
+	end
+	modules.e5 = function()
+		return { normalize = normalizeImageSource, classify = classifyImageSource }
+	end
+	modules.e7 = function()
+		local Promise = modules.ay()
+		local function resolveCustomAsset(path)
+			local getCustomAsset = getGlobal("getcustomasset") or getGlobal("getsynasset")
+			local isFile = getGlobal("isfile")
+			if getCustomAsset == nil or isFile == nil then
+				return nil, "Loading local image files requires isfile and getcustomasset/getsynasset."
+			end
+			local ok, exists = pcall(isFile, path)
+			if not ok then
+				return nil, tostring(exists)
+			end
+			if not exists then
+				return nil, string.format("Image file '%s' does not exist.", path)
+			end
+			local assetOk, asset = pcall(getCustomAsset, path)
+			if not assetOk then
+				return nil, tostring(asset)
+			end
+			return asset
+		end
+		local resolverClass = {}
+		resolverClass.__index = resolverClass
+		function resolverClass.new()
+			return setmetatable({ _resolved = {} }, resolverClass)
+		end
+		function resolverClass:GetAsync(source)
+			local cached = self._resolved[source]
+			if cached ~= nil then
+				return cached == false and Promise.reject("Image source previously failed to load.")
+					or Promise.resolve(cached)
+			end
+			local kind = classifyImageSource(source)
+			if kind == "Asset" then
+				self._resolved[source] = source
+				return Promise.resolve(source)
+			end
+			if kind == "File" then
+				local asset, err = resolveCustomAsset(source)
+				if asset == nil then
+					self._resolved[source] = false
+					return Promise.reject(err)
+				end
+				self._resolved[source] = asset
+				return Promise.resolve(asset)
+			end
+			local httpGet = getGlobal("httpget") or getGlobal("HttpGet")
+			local writeFile = getGlobal("writefile")
+			local makeFolder = getGlobal("makefolder")
+			if httpGet == nil and writeFile == nil then
+				return Promise.reject("Loading image URLs requires an HTTP and file-write executor API.")
+			end
+			return Promise.new(function(resolve, reject)
+				local ok, body
+				if httpGet ~= nil then
+					ok, body = pcall(httpGet, source)
+				else
+					ok, body = pcall(function()
+						return game:HttpGet(source)
+					end)
+				end
+				if not ok then
+					reject(string.format("Failed requesting image URL: %s", tostring(body)))
+					return
+				end
+				if type(body) ~= "string" then
+					reject("The image URL response was not text/binary data.")
+					return
+				end
+				if writeFile == nil then
+					reject("Downloading image URLs requires the writefile executor API.")
+					return
+				end
+				local path = "kiciarebuild/ui-library-cache/" .. services.HttpService:GenerateGUID(false) .. ".png"
+				if makeFolder ~= nil then
+					pcall(makeFolder, "kiciarebuild")
+					pcall(makeFolder, "kiciarebuild/ui-library-cache")
+				end
+				local wrote, writeError = pcall(writeFile, path, body)
+				if not wrote then
+					reject(string.format("Failed writing downloaded image: %s", tostring(writeError)))
+					return
+				end
+				local asset, assetError = resolveCustomAsset(path)
+				if asset == nil then
+					reject(assetError)
+					return
+				end
+				self._resolved[source] = asset
+				resolve(asset)
+			end)
+		end
+		function resolverClass:ClearCache()
+			table.clear(self._resolved)
+		end
+		return resolverClass
+	end
+
+	local environment = _G
+	if getgenv ~= nil then
+		local ok, value = pcall(getgenv)
+		if ok and type(value) == "table" then
+			environment = value
+		end
+	end
+	local getHiddenUI = getGlobal("gethui")
+	local getThreadIdentity = getGlobal("getthreadidentity") or getGlobal("getidentity")
+	local setThreadIdentity = getGlobal("setthreadidentity") or getGlobal("setidentity")
+	local getConnections = getGlobal("getconnections")
+	local setClipboard = getGlobal("setclipboard") or getGlobal("toclipboard")
+	return {
+		Environment = environment,
+		Runtime = runtime,
+		Players = services.Players,
+		ReplicatedStorage = services.ReplicatedStorage,
+		RunService = services.RunService,
+		UserInputService = userInputService,
+		HttpService = services.HttpService,
+		Player = services.Players.LocalPlayer,
+		Signal = Signal,
+		Trove = Trove,
+		Constants = constants,
+		SharedConstants = {},
+		Modules = modules,
+		RawGet = rawget,
+		RawSet = rawset,
+		ProtectedCall = pcall,
+		IntegrityCounterA = 3870,
+		IntegrityCounterB = 4800,
+		IntegrityFlagA = true,
+		IntegrityFlagB = true,
+		ZeroValue = function() return 0 end,
+		AlternateZeroValue = function() return 0 end,
+		CloneReference = getGlobal("cloneref") or function(value) return value end,
+		GetHiddenUI = function()
+			if getHiddenUI ~= nil then
+				local ok, hidden = pcall(getHiddenUI)
+				if ok and hidden ~= nil then
+					return hidden
+				end
+			end
+			return game:GetService("CoreGui")
+		end,
+		GetThreadIdentity = getThreadIdentity or function() return 8 end,
+		SetThreadIdentity = setThreadIdentity or function() end,
+		GetConnections = getConnections or function() return {} end,
+		SetClipboard = setClipboard or function() end,
+	}
+end
+
 return function(dependencies)
+	dependencies = dependencies or createStandaloneDependencies()
 	local environment = dependencies.Environment
 	local runtime = dependencies.Runtime
 	local Players = dependencies.Players
@@ -1517,6 +2081,13 @@ return function(dependencies)
 	end
 	do -- t
 		local function createModule()
+			local coreGui = game:GetService("CoreGui")
+			if getHiddenUI ~= nil then
+				local ok, hiddenUI = protectedCall(getHiddenUI)
+				if ok and hiddenUI ~= nil then
+					coreGui = hiddenUI
+				end
+			end
 			return {
 				Players = cloneReference(game:GetService("Players")),
 				GuiService = cloneReference(game:GetService("GuiService")),
@@ -1524,7 +2095,7 @@ return function(dependencies)
 				RunService = cloneReference(game:GetService("RunService")),
 				TweenService = cloneReference(game:GetService("TweenService")),
 				HttpService = cloneReference(game:GetService("HttpService")),
-				CoreGui = cloneReference(game:GetService("CoreGui")),
+				CoreGui = cloneReference(coreGui),
 			}
 		end
 
