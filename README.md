@@ -38,7 +38,7 @@ Important menu options:
 | Option | Meaning |
 | --- | --- |
 | `Title` | Initial window and watermark title. |
-| `Icon` | `ui.DefaultLogo`, a `lucide:<name>` icon, or a custom image asset URI. |
+| `Icon` | Defaults to `ui.DefaultLogo`; accepts a `lucide:<name>` icon or a custom image asset URI. |
 | `Directory` | Required path used for menu state and config-related files. |
 | `Config` | Optional reactive config adapter. Control `Config` paths only bind when this is supplied. |
 | `State`, `StateData` | Optional state manager and loaded state data. |
@@ -195,20 +195,18 @@ bundled atlas currently supports:
 `search`, `settings`, `shield`, `shield-alert`, `shirt`, `sliders-horizontal`,
 `smartphone`, `sparkles`, `star`, `swords`, `target`, `trophy`, `upload`,
 `user-cog`, `user-round`, `volume-2`, `wand-sparkles`, `wrench`, `x`, and `zap`.
-The icon atlas is generated from [Lucide](https://lucide.dev); applicable ISC
-and Feather/MIT license notices are included in `UI_Library.lua`.
+The embedded sprite atlas is generated from [Lucide](https://lucide.dev) SVGs
+and carries their ISC license notice in `UI_Library.lua`. It is cached on first
+icon use in `GHP_scripts/ui-library-cache`.
 
-The supplied GHP PNG is embedded in the library and exposed as
-`ui.DefaultLogo`; it is also used when `Icon` is omitted. Menu logos retain
-their original colors and are not theme-tinted. The library writes its
-embedded logo and icon atlas to `GHP_scripts/ui-library-cache`, so it requires
-`writefile` and `getcustomasset` or `getsynasset` at initialization. To use a
-different built-in logo, replace the Base64 value in `GHP_LOGO_BASE64` in
-`UI_Library.lua` with the PNG's Base64 payload (omit the
-`data:image/png;base64,` prefix). Scripts using `ui.DefaultLogo` will pick up
-the replacement automatically. To override the logo for one menu, write a PNG
-to a file, resolve it with one of the custom-asset functions, and pass the
-returned URI as `Icon`.
+`ui.DefaultLogo` is the embedded 1024x1024 GHP PNG. It is cached as
+`GHP_scripts/ui-library-cache/ghp-logo-v1.png` and keeps its original colors.
+To replace it, replace the Base64 payload in `GHP_LOGO_BASE64` in
+`UI_Library.lua`, omitting the `data:image/png;base64,` prefix. Bundled image
+caching requires `isfile`, `writefile`, and `getcustomasset` or `getsynasset`;
+`makefolder` is also needed if the cache directory does not exist. To override
+the logo for one menu, write a PNG to a file, resolve it with one of the
+custom-asset functions, and pass the returned URI as `Icon`.
 
 ## Example
 
