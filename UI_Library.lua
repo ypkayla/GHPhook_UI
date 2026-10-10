@@ -1,6 +1,3 @@
--- Reusable menu and control framework extracted from Ghp_rivals.lua.
--- The host supplies executor/runtime services and the shared module registry.
--- See UI_Library.md for the public menu and control API.
 return function(dependencies)
 	local environment = dependencies.Environment
 	local runtime = dependencies.Runtime
