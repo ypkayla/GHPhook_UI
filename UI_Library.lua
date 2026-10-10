@@ -1,3 +1,9 @@
+-- UI library attribution:
+-- Original UI library by ypkayla (GHP).
+-- Source: https://github.com/ypkayla/Kicia_UI_remake
+-- The original library's license or permission from its copyright holder governs its use.
+-- The embedded Lucide icon atlas is separately distributed under the ISC license;
+-- see its license notice in the Repository.
 -- The embedded Lucide icon atlas is distributed under the Lucide ISC license.
 -- Copyright (c) 2022 Lucide Contributors
 -- Permission to use, copy, modify, and/or distribute this software for any
@@ -10,7 +16,6 @@
 -- WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 -- ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
---Credits for the UI go to ypkayla (GHP) alone!
 local function createStandaloneDependencies()
 	local function getGlobal(name)
 		local value
