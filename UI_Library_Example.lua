@@ -1,4 +1,9 @@
--- Load and initialize the standalone library from GitHub.
+-- UI library attribution:
+-- Original UI library by ypkayla (GHP).
+-- Source: https://github.com/ypkayla/Kicia_UI_remake
+-- The original library's license or permission from its copyright holder governs its use.
+-- The embedded Lucide icon atlas is separately distributed under the ISC license;
+-- see its license notice in the Repository.
 local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
 local compile = assert(loadstring, "This example requires an environment with loadstring")
 local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
@@ -23,6 +28,9 @@ end
 local menu = ui.CreateMenu({
 	Title = "Standalone UI Library Example",
 	Icon = ui.DefaultLogo,
+	IconSize = Vector2.new(48, 48),
+	WatermarkIcon = ui.DefaultLogo,
+	WatermarkIconSize = Vector2.new(30, 30),
 	Directory = "GHP_scripts/rivals/ui-library-example",
 })
 environment.GhpUiLibraryExample = menu
@@ -72,7 +80,8 @@ left:AddTextBox({
 	Label = "Example text box",
 	Placeholder = "Type here",
 	Default = "",
-	MaxLength = 80,
+	MaxLength = 220,
+	InputWidth = 180,
 	FocusLostOnly = true,
 	OnChanged = function(value)
 		print("Example text:", value)
