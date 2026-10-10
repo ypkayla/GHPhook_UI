@@ -636,7 +636,6 @@ return function(dependencies)
 					v115 = arg
 				end,
 				get = function()
-					assert(v115)
 					return v115
 				end,
 			}
