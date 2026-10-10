@@ -1,7 +1,9 @@
--- Run after Ghp_rivals.lua has loaded and published GhpWtf.UI.
+local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
+local compile = assert(loadstring, "This example requires an executor with loadstring")
+local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
+local uiFactory = chunk()
+local ui = uiFactory()
 local environment = (getgenv and getgenv()) or _G
-local host = assert(environment.GhpWtf, "Load Ghp_rivals.lua before this example")
-local ui = assert(host.UI, "The GHP UI library has not been initialized")
 
 local previous = environment.GhpUiLibraryExample
 if previous ~= nil then
@@ -9,9 +11,9 @@ if previous ~= nil then
 end
 
 local menu = ui.CreateMenu({
-	Title = "GHP UI Library Example",
+	Title = "Standalone UI Library Example",
 	Icon = "rbxassetid://118838006164746",
-	Directory = "kiciarebuild/rivals/ui-library-example",
+	Directory = "GHP_scripts/rivals/ui-library-example",
 })
 environment.GhpUiLibraryExample = menu
 
@@ -73,7 +75,15 @@ left:AddButton({
 		menu:Dialog({
 			Title = "Example dialog",
 			Description = "Dialogs can host pages and actions.",
-		})
+		}, function(dialog)
+			dialog:AddPage({
+				Title = "Dialog page",
+				Description = "This page is built inside the modal.",
+				Glyph = "?",
+			}, function(container)
+				container:AddLabel({ Label = "Dialog page content" })
+			end)
+		end)
 	end,
 })
 
@@ -135,18 +145,36 @@ right:AddMultiList({
 
 left:AddColor({
 	Label = "Color picker",
-	Default = { Rgb = Color3.fromRGB(70, 160, 255), Alpha = 1 },
+	Default = {
+		Rgb = Color3.fromRGB(70, 160, 255),
+		Alpha = 1,
+		Stops = {
+			{ Time = 0, Value = Color3.fromRGB(70, 160, 255) },
+			{ Time = 1, Value = Color3.fromRGB(220, 90, 170) },
+		},
+	},
 	Alpha = true,
-	Gradient = "on",
+	Gradient = "editable",
 	Animatable = true,
 	OnChanged = function(value)
 		print("Color changed:", value.Rgb, value.Alpha)
 	end,
 })
 
-left:AddKeybind({
+local keybind = left:AddKeybind({
 	Label = "Example keybind",
+	InKeybindList = true,
+	OnChanged = function(value)
+		print("Keybind changed:", value.Key, value.Mode)
+	end,
 })
+keybind:SetFeatureEnabled(enabledToggle.Value)
+keybind:Connect(enabledToggle.ValueChanged, function(value)
+	keybind:SetFeatureEnabled(value)
+end)
+keybind:Connect(keybind.ActiveChanged, function(active)
+	print("Keybind active:", active)
+end)
 
 right:AddIconStrip({
 	Label = "Icon choices",
@@ -189,10 +217,20 @@ model:Destroy()
 
 right:AddSkinChanger({
 	Label = "Skin browser example",
-	Items = {},
+	Items = {
+		{
+			Name = "Example skin",
+			Title = "Example skin",
+			Image = "rbxassetid://118838006164746",
+			PreviewColor = Color3.fromRGB(28, 34, 48),
+		},
+	},
 	Height = 160,
 	HeightMode = "Fixed",
 	State = "Ready",
+	OnChanged = function(name)
+		print("Selected skin:", name)
+	end,
 })
 
 local conditionalGroup = left:AddGroup({
@@ -233,12 +271,16 @@ local gear = left:AddGear({
 	Row = enabledToggle.Row,
 	Tooltip = "Open the gear details page",
 })
-gear:AddPage({
-	Title = "Advanced details",
-	Description = "Gear overlays can contain their own pages.",
-}, function(container)
-	container:AddLabel({ Label = "Content inside the gear page" })
-end)
+gear:AddLabel({
+	Label = "Advanced details",
+})
+gear:AddToggle({
+	Label = "Advanced option",
+	Default = true,
+	OnChanged = function(value)
+		print("Advanced option:", value)
+	end,
+})
 
 local settingsTab = menu:AddSettingsTab()
 assert(settingsTab ~= nil)
@@ -247,12 +289,11 @@ menu:RegisterMobileButton("ui-example-action", "Example action", "Toggle", funct
 	print("Mobile action active:", active)
 end)
 
-menu:SetTitle("GHP UI Library Example")
+menu:SetTitle("Standalone UI Library Example")
 menu:SetAccent(Color3.fromRGB(70, 160, 255))
 menu:SetWatermarkUsername("UI Example")
 menu:SetWatermarkEnabled(true)
 menu:SetKeybindListEnabled(true)
-menu:SetVisible(true)
 
 left:AddButton({
 	Label = "Destroy demo menu",
@@ -264,3 +305,5 @@ left:AddButton({
 		end
 	end,
 })
+
+menu:SetVisible(true, true)
