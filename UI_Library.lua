@@ -21200,7 +21200,7 @@ end
 				end)
 
 				v136:Connect(userInputService.InputBegan, function(arg2, arg3)
-					if arg3 then
+					if arg3 and arg2.KeyCode ~= obj.Keybind then
 						return
 					end
 
