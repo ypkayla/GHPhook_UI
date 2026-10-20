@@ -18869,8 +18869,23 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				v120:Bind(instance, "Color", "Outline")
 				instance.Parent = textButton
 				local uiPadding = Instance.new("UIPadding")
-				uiPadding.PaddingLeft = UDim.new(0, 14)
-				uiPadding.PaddingRight = UDim.new(0, 14)
+				local mobileLogo = nil
+				if arg2.Image ~= nil then
+					uiPadding.PaddingLeft = UDim.new(0, 8)
+					uiPadding.PaddingRight = UDim.new(0, 10)
+					mobileLogo = Instance.new("ImageLabel")
+					mobileLogo.Name = "GhpLogo"
+					mobileLogo.BackgroundTransparency = 1
+					mobileLogo.BorderSizePixel = 0
+					mobileLogo.Size = UDim2.fromOffset(26, 26)
+					mobileLogo.ScaleType = Enum.ScaleType.Fit
+					mobileLogo.LayoutOrder = 1
+					setImageSource(mobileLogo, arg2.Image)
+					mobileLogo.Parent = textButton
+				else
+					uiPadding.PaddingLeft = UDim.new(0, 14)
+					uiPadding.PaddingRight = UDim.new(0, 14)
+				end
 				uiPadding.Parent = textButton
 				local instance2 = Instance.new(constants[135])
 				instance2.BackgroundTransparency = 1
@@ -18881,8 +18896,18 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				instance2.TextSize = 14
 				instance2.BorderSizePixel = 0
 				v120:Bind(instance2, "TextColor3", "TextColor")
+				if mobileLogo ~= nil then
+					local layout = Instance.new("UIListLayout")
+					layout.FillDirection = Enum.FillDirection.Horizontal
+					layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+					layout.VerticalAlignment = Enum.VerticalAlignment.Center
+					layout.SortOrder = Enum.SortOrder.LayoutOrder
+					layout.Padding = UDim.new(0, 8)
+					layout.Parent = textButton
+					instance2.LayoutOrder = 2
+				end
 				instance2.Parent = textButton
-				local rt2 = { Instance = textButton, Label = instance2, Stroke = instance }
+				local rt2 = { Instance = textButton, Label = instance2, Logo = mobileLogo, Stroke = instance }
 				arg2.Rt = rt2
 
 				if arg2.Active then
@@ -18936,7 +18961,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 				end
 			end
 
-			class.Register = function(arg, arg2, arg3, arg4, arg5)
+			class.Register = function(arg, arg2, arg3, arg4, arg5, arg6)
 				local v120 = arg._buttonByFlag[arg2]
 
 				if v120 ~= nil then
@@ -18952,6 +18977,7 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 					Visible = true,
 					Invisible = false,
 					LabelText = arg3,
+					Image = arg6,
 					Trove = arg._trove:Extend(),
 					OnActivate = arg5,
 					Rt = nil,
@@ -23828,35 +23854,15 @@ Y2MvtHEBGBt7wf0HKWgTMfmyOhUAAAAASUVORK5CYII=
 			}
 
 			local tbl19 = {
-				Minecraftia = {
-					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Minecraftia-Regular.ttf",
-					FileName = "Minecraftia-Regular.ttf",
-					Weight = Enum.FontWeight.Regular,
-					Style = Enum.FontStyle.Normal,
-				},
-				[constants[43]] = {
-					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Proggy-Clean.ttf",
-					FileName = "Proggy-Clean.ttf",
-					Weight = Enum.FontWeight.Regular,
-					Style = Enum.FontStyle.Normal,
-				},
-				[constants[125]] = {
-					Url = "https://github.com/GHPshook-org/v3-assets/raw/refs/heads/main/Proggy-Tiny.ttf",
-					FileName = "Proggy-Tiny.ttf",
-					Weight = Enum.FontWeight.Regular,
-					Style = Enum.FontStyle.Normal,
-				},
+				-- Use Roblox-provided fonts here so startup never depends on unrelated font hosts.
 			}
 
 			local font = Font.fromEnum(Enum.Font.SourceSans)
 
 			local class = {
 				Order = {
-					"Minecraftia",
-					"Proggy Clean",
-					constants[125],
 					"Arial",
-					constants[24],
+					"Roboto",
 					"Ubuntu",
 					"Inconsolata",
 				},
@@ -25376,7 +25382,7 @@ end
 				end
 
 				if v123.WantsMobileButtons() then
-					local menuToggle = obj:RegisterMobileButton("menu_toggle", "Menu", "Toggle", function(arg2)
+					local menuToggle = obj:RegisterMobileToggleButton("menu_toggle", "Menu", function(arg2)
 						obj:SetVisible(arg2)
 					end)
 
@@ -25593,11 +25599,18 @@ end
 				return v136
 			end
 
-			class.RegisterMobileButton = function(arg, arg2, arg3, arg4, arg5)
+			class.RegisterMobileButton = function(arg, arg2, arg3, arg4, arg5, arg6)
 				if not v123.WantsMobileButtons() then
 					return nil
 				end
-				return fn38(arg):Register(arg2, arg3, arg4, arg5)
+				return fn38(arg):Register(arg2, arg3, arg4, arg5, arg6)
+			end
+
+			class.RegisterMobileToggleButton = function(arg, id, label, callback)
+				if not v123.WantsMobileButtons() then
+					return nil
+				end
+				return arg:RegisterMobileButton(id, label or "Toggle", "Toggle", callback or function() end, defaultLogo)
 			end
 
 			class.RegisterSearchSection = function(arg, arg2, arg3, arg4)
