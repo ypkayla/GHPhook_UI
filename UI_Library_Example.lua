@@ -1,9 +1,3 @@
--- UI library attribution:
--- Original UI library by ypkayla (GHP).
--- Source: https://github.com/ypkayla/Kicia_UI_remake
--- The original library's license or permission from its copyright holder governs its use.
--- The embedded Lucide icon atlas is separately distributed under the ISC license;
--- see its license notice in the Repository.
 local sourceUrl = "https://raw.githubusercontent.com/ypkayla/Kicia_UI_remake/refs/heads/main/UI_Library.lua"
 local compile = assert(loadstring, "This example requires an environment with loadstring")
 local chunk = assert(compile(game:HttpGet(sourceUrl)), "Failed to compile UI_Library.lua")
@@ -304,7 +298,7 @@ gear:AddToggle({
 local settingsTab = menu:AddSettingsTab()
 assert(settingsTab ~= nil)
 
-menu:RegisterMobileButton("ui-example-action", "Example action", "Toggle", function(active)
+menu:RegisterMobileToggleButton("ui-example-action", "Example action", function(active)
 	print("Mobile action active:", active)
 end)
 
