@@ -1,7 +1,6 @@
 # GHP UI Library
 
 **Credits: GHP (ypkayla).**
-**(LICENSED UNDER [LICENSE.md](LICENSE.md))**
 
 This guide describes the standalone Roblox Luau UI library. It initializes
 its own services, signals, cleanup manager, and UI helpers; it does not require
@@ -141,7 +140,8 @@ available when the source's value matches the group's condition.
 | `SetAccent(Color3)` | Changes the UI accent color. |
 | `SetWatermarkEnabled(boolean)`, `IsWatermarkEnabled()` | Control the watermark. `SetWatermarkUsername(string)` changes its username text. |
 | `SetKeybindListEnabled(boolean)`, `IsKeybindListEnabled()` | Control the keybind HUD (not created on every device/layout). `AddKeybindHudEntry()` creates a manual entry when available. |
-| `RegisterMobileButton(id, label, mode, callback)` | Registers a mobile HUD button when the current layout supports mobile buttons; returns `nil` on unsupported layouts. |
+| `RegisterMobileButton(id, label, mode, callback, image?)` | Registers a mobile HUD button when the current layout supports mobile buttons; returns `nil` on unsupported layouts. An optional image URI adds a thumbnail. |
+| `RegisterMobileToggleButton(id, label, callback)` | Registers an always-visible toggle button on mobile/touch layouts, using the embedded GHP logo as its thumbnail. Returns `nil` on unsupported layouts. |
 | `SetMenuPillHidden(boolean)`, `EnterMobileButtonDragMode(callback)` | Control the mobile menu pill and on-screen button layout editor. |
 | `SearchQuery(string)`, `ShowSearchResults(...)`, `HideSearchResults()` | Search registered UI controls; normal users can also use the menu's built-in search UI. |
 | `GetConfig()`, `GetStateData()`, `SaveState()` | Access optional configuration/state and persist menu state. |
